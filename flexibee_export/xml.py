@@ -34,44 +34,46 @@ def export(order_id,
            order_items_dict,
            ):
     root = ElementTree.Element('winstrom', attrib={'version': '1.0'})
-    ElementTree.SubElement(root, 'id').text = "ext:ESHOP:{}".format(order_id)
-    ElementTree.SubElement(root, 'mena',
-                           showAs='{}: {}'.format(currency_code, currency_string)).text = "code: {}".format(
-        currency_code)
-    ElementTree.SubElement(root, 'datObjednavky').text = date_created.isoformat()
 
-    ElementTree.SubElement(root, 'varSym').text = str(variable_symbol)
-    ElementTree.SubElement(root, 'formaUhradyCis').text = "code: {}".format(payment_method_code)
-    ElementTree.SubElement(root, 'formaDopravy').text = "code: {}".format(shipping_method_code)
-    ElementTree.SubElement(root, 'popis').text = description
-    ElementTree.SubElement(root, 'typDokl', showAs="FAKTURA: Faktura - daňový doklad").text = "code:FAKTURA"
-    ElementTree.SubElement(root, 'nazev').text = "{}{}_{}".format(shipping_first_name,
+    invoice = ElementTree.SubElement(root, 'faktura-vydana')
+    ElementTree.SubElement(invoice, 'id').text = "ext:ESHOP:{}".format(order_id)
+    ElementTree.SubElement(invoice, 'mena',
+                           showAs='{}: {}'.format(currency_code, currency_string)).text = "code:{}".format(
+        currency_code)
+    ElementTree.SubElement(invoice, 'datObjednavky').text = date_created.isoformat()
+
+    ElementTree.SubElement(invoice, 'varSym').text = str(variable_symbol)
+    ElementTree.SubElement(invoice, 'formaUhradyCis').text = "code:{}".format(payment_method_code)
+    ElementTree.SubElement(invoice, 'formaDopravy').text = "code:{}".format(shipping_method_code)
+    ElementTree.SubElement(invoice, 'popis').text = description
+    ElementTree.SubElement(invoice, 'typDokl', showAs="FAKTURA: Faktura - daňový doklad").text = "code:FAKTURA"
+    ElementTree.SubElement(invoice, 'nazev').text = "{}{}_{}".format(shipping_first_name,
                                                                   shipping_last_name,
                                                                   variable_symbol)
-    ElementTree.SubElement(root, 'nazFirmy').text = "{} {}".format(shipping_first_name,
+    ElementTree.SubElement(invoice, 'nazFirmy').text = "{} {}".format(shipping_first_name,
                                                                    shipping_last_name)
-    ElementTree.SubElement(root, 'ulice').text = "{}".format(shipping_street)
-    ElementTree.SubElement(root, 'mesto').text = "{}".format(shipping_city)
-    ElementTree.SubElement(root, 'psc').text = "{}".format(shipping_zip)
-    ElementTree.SubElement(root, 'stat').text = "code: {}".format(shipping_country)
+    ElementTree.SubElement(invoice, 'ulice').text = "{}".format(shipping_street)
+    ElementTree.SubElement(invoice, 'mesto').text = "{}".format(shipping_city)
+    ElementTree.SubElement(invoice, 'psc').text = "{}".format(shipping_zip)
+    ElementTree.SubElement(invoice, 'stat').text = "code: {}".format(shipping_country)
 
-    ElementTree.SubElement(root, 'ic').text = reg_number
-    ElementTree.SubElement(root, 'dic').text = vat_number
+    ElementTree.SubElement(invoice, 'ic').text = reg_number
+    ElementTree.SubElement(invoice, 'dic').text = vat_number
     #
-    ElementTree.SubElement(root, 'kontaktTel').text = str(phone)
-    ElementTree.SubElement(root, 'kontaktEmail').text = email
+    ElementTree.SubElement(invoice, 'kontaktTel').text = str(phone)
+    ElementTree.SubElement(invoice, 'kontaktEmail').text = email
 
-    ElementTree.SubElement(root, 'postovniShodna').text = str(same_shipping_as_billing).lower()
+    ElementTree.SubElement(invoice, 'postovniShodna').text = str(same_shipping_as_billing).lower()
 
     if not same_shipping_as_billing:
-        ElementTree.SubElement(root,
+        ElementTree.SubElement(invoice,
                                'faNazev').text = billing_company_name or billing_first_name + " " + billing_last_name
-        ElementTree.SubElement(root, 'faUlice').text = billing_street
-        ElementTree.SubElement(root, 'faMesto').text = billing_city
-        ElementTree.SubElement(root, 'faPsc').text = billing_zip
-        ElementTree.SubElement(root, 'faStat').text = "code: {}".format(billing_country)
+        ElementTree.SubElement(invoice, 'faUlice').text = billing_street
+        ElementTree.SubElement(invoice, 'faMesto').text = billing_city
+        ElementTree.SubElement(invoice, 'faPsc').text = billing_zip
+        ElementTree.SubElement(invoice, 'faStat').text = "code: {}".format(billing_country)
 
-    items = ElementTree.SubElement(root, "polozkyFaktury", removeAll='True')
+    items = ElementTree.SubElement(invoice, "polozkyFaktury", removeAll='True')
     for key, item in order_items_dict.items():
         invoice_item = ElementTree.SubElement(items, "faktura-vydana-polozka")
         ElementTree.SubElement(invoice_item, "typPolozkyK").text = "typPolozky.obecny"
@@ -79,7 +81,7 @@ def export(order_id,
         ElementTree.SubElement(invoice_item, "typSzbDphK").text = "typSzbDph.dphZakl"
         ElementTree.SubElement(invoice_item, "szbDph").text = item.get('tax')
         ElementTree.SubElement(invoice_item, "mena",
-                               showAs='{}: {}'.format(currency_code,
+                               showAs='{}:{}'.format(currency_code,
                                                       currency_string)).text = "code: {}".format(currency_code)
         ElementTree.SubElement(invoice_item, "typUcOp",
                                showAs="DP1-ZBOŽÍ: Prodej zboží a výrobků").text = "code: DP1-ZBOŽÍ"
@@ -99,10 +101,10 @@ def export(order_id,
         ElementTree.SubElement(invoice_item, "typSzbDphK").text = "typSzbDph.dphZakl"
         ElementTree.SubElement(invoice_item, "szbDph").text = "21"
         ElementTree.SubElement(invoice_item, "mena",
-                               showAs="{}: {}".format(currency_code,
+                               showAs="{}:{}".format(currency_code,
                                                       currency_string)).text = "code: {}".format(currency_code)
         ElementTree.SubElement(invoice_item, "typUcOp",
-                               showAs="DP1-ZBOŽÍ: Prodej zboží a výrobků").text = "code: DP1-ZBOŽÍ"
+                               showAs="DP1-ZBOŽÍ: Prodej zboží a výrobků").text = "code:DP1-ZBOŽÍ"
         ElementTree.SubElement(invoice_item, "kopDanEvid").text = "True"
         ElementTree.SubElement(invoice_item, "nazev").text = "{} - {} - {}".format(shipping_country,
                                                                                    payment_method_name,
