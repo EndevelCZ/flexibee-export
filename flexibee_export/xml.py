@@ -100,7 +100,7 @@ def export(order_id,
         ElementTree.SubElement(invoice_item, "typPolozkyK").text = "typPolozky.obecny"
         ElementTree.SubElement(invoice_item, "typCenyDphK", showAs="včetně DPH").text = "typCeny.sDph"
         ElementTree.SubElement(invoice_item, "typSzbDphK").text = "typSzbDph.dphZakl"
-        ElementTree.SubElement(invoice_item, "szbDph").text = shipping_method_vat
+        ElementTree.SubElement(invoice_item, "szbDph").text = str(shipping_method_vat)
         ElementTree.SubElement(invoice_item, "mena",
                                showAs="{}:{}".format(currency_code,
                                                      currency_string)).text = "code:{}".format(currency_code)
