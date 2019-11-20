@@ -49,15 +49,13 @@ def export(order_id,
     ElementTree.SubElement(invoice, 'formaDopravy').text = "code:{}".format(shipping_method_code)
     ElementTree.SubElement(invoice, 'popis').text = description
     ElementTree.SubElement(invoice, 'typDokl', showAs="FAKTURA: Faktura - daňový doklad").text = "code:FAKTURA"
-    ElementTree.SubElement(invoice, 'nazev').text = "{}{}_{}".format(shipping_first_name,
-                                                                     shipping_last_name,
-                                                                     variable_symbol)
+    ElementTree.SubElement(invoice, 'nazev').text = billing_company_name or billing_first_name + " " + billing_last_name
     ElementTree.SubElement(invoice, 'nazFirmy').text = "{} {}".format(shipping_first_name,
                                                                       shipping_last_name)
-    ElementTree.SubElement(invoice, 'ulice').text = "{}".format(shipping_street)
-    ElementTree.SubElement(invoice, 'mesto').text = "{}".format(shipping_city)
-    ElementTree.SubElement(invoice, 'psc').text = "{}".format(shipping_zip)
-    ElementTree.SubElement(invoice, 'stat').text = "code:{}".format(shipping_country)
+    ElementTree.SubElement(invoice, 'ulice').text = "{}".format(billing_street)
+    ElementTree.SubElement(invoice, 'mesto').text = "{}".format(billing_city)
+    ElementTree.SubElement(invoice, 'psc').text = "{}".format(billing_zip)
+    ElementTree.SubElement(invoice, 'stat').text = "code:{}".format(billing_country)
 
     ElementTree.SubElement(invoice, 'ic').text = reg_number
     ElementTree.SubElement(invoice, 'dic').text = vat_number
@@ -69,11 +67,11 @@ def export(order_id,
 
     if not same_shipping_as_billing:
         ElementTree.SubElement(invoice,
-                               'faNazev').text = billing_company_name or billing_first_name + " " + billing_last_name
-        ElementTree.SubElement(invoice, 'faUlice').text = billing_street
-        ElementTree.SubElement(invoice, 'faMesto').text = billing_city
-        ElementTree.SubElement(invoice, 'faPsc').text = billing_zip
-        ElementTree.SubElement(invoice, 'faStat').text = "code:{}".format(billing_country)
+                               'faNazev').text = "{} {}".format(shipping_first_name, shipping_last_name)
+        ElementTree.SubElement(invoice, 'faUlice').text = shipping_street
+        ElementTree.SubElement(invoice, 'faMesto').text = shipping_city
+        ElementTree.SubElement(invoice, 'faPsc').text = shipping_zip
+        ElementTree.SubElement(invoice, 'faStat').text = "code:{}".format(shipping_country)
 
     items = ElementTree.SubElement(invoice, "polozkyFaktury", removeAll='True')
     for key, item in order_items_dict.items():
