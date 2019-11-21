@@ -1,43 +1,42 @@
 import xml.etree.ElementTree as ElementTree
 
 
-def export(order_id,
-           variable_symbol,
-           currency_code,
-           currency_string,
-           date_created,
-           description,
-           payment_method_code,
-           payment_method_name,
-           payment_method_vat,
-           payment_price,
-           shipping_method_code,
-           shipping_method_name,
-           shipping_method_vat,
-           shipping_price,
-           shipping_first_name,
-           shipping_last_name,
-           shipping_street,
-           shipping_city,
-           shipping_zip,
-           shipping_country,
-           phone,
-           reg_number,
-           vat_number,
-           email,
-           same_shipping_as_billing,
-           billing_first_name,
-           billing_last_name,
-           billing_company_name,
-           billing_street,
-           billing_city,
-           billing_zip,
-           billing_country,
-           order_items_dict,
-           ):
-    root = ElementTree.Element('winstrom', attrib={'version': '1.0'})
+def export_invoice(order_id,
+                   variable_symbol,
+                   currency_code,
+                   currency_string,
+                   date_created,
+                   description,
+                   payment_method_code,
+                   payment_method_name,
+                   payment_method_vat,
+                   payment_price,
+                   shipping_method_code,
+                   shipping_method_name,
+                   shipping_method_vat,
+                   shipping_price,
+                   shipping_first_name,
+                   shipping_last_name,
+                   shipping_street,
+                   shipping_city,
+                   shipping_zip,
+                   shipping_country,
+                   phone,
+                   reg_number,
+                   vat_number,
+                   email,
+                   same_shipping_as_billing,
+                   billing_first_name,
+                   billing_last_name,
+                   billing_company_name,
+                   billing_street,
+                   billing_city,
+                   billing_zip,
+                   billing_country,
+                   order_items_dict, ):
+    """Exports only invoice part in XML, missing xml root"""
 
-    invoice = ElementTree.SubElement(root, 'faktura-vydana')
+    invoice = ElementTree.Element('faktura-vydana')
     ElementTree.SubElement(invoice, 'id').text = "ext:ESHOP:{}".format(order_id)
     ElementTree.SubElement(invoice, 'mena',
                            showAs='{}: {}'.format(currency_code, currency_string)).text = "code:{}".format(
@@ -51,7 +50,7 @@ def export(order_id,
     ElementTree.SubElement(invoice, 'typDokl', showAs="FAKTURA: Faktura - daňový doklad").text = "code:FAKTURA"
     ElementTree.SubElement(invoice, 'nazev').text = "{}{}_{}".format(billing_first_name, billing_last_name,
                                                                      variable_symbol)
-    ElementTree.SubElement(invoice, 'nazFirmy').text = billing_company_name or\
+    ElementTree.SubElement(invoice, 'nazFirmy').text = billing_company_name or \
                                                        billing_first_name + " " + billing_last_name
     ElementTree.SubElement(invoice, 'ulice').text = "{}".format(billing_street)
     ElementTree.SubElement(invoice, 'mesto').text = "{}".format(billing_city)
@@ -129,6 +128,15 @@ def export(order_id,
         ElementTree.SubElement(invoice_item, "mnozMj").text = "1"
         ElementTree.SubElement(invoice_item, "cenaMj").text = str(payment_price)
         ElementTree.SubElement(invoice_item, "poznam")
+
+    return invoice
+
+
+def export_full(invoices):
+    """creates full xml document from invoice elements and returns it as string"""
+    root = ElementTree.Element('winstrom', attrib={'version': '1.0'})
+    for invoice in invoices:
+        root.append(invoice)
 
     # write file
     mydata = ElementTree.tostring(root, encoding="unicode")

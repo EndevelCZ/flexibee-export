@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="flexibee_export",
-    version="0.0.5",
+    version="0.1.0",
     author="Endevel",
     author_email="info@endevel.cz",
     description="FlexiBee xml export package",
