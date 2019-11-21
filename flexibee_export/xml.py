@@ -49,9 +49,10 @@ def export(order_id,
     ElementTree.SubElement(invoice, 'formaDopravy').text = "code:{}".format(shipping_method_code)
     ElementTree.SubElement(invoice, 'popis').text = description
     ElementTree.SubElement(invoice, 'typDokl', showAs="FAKTURA: Faktura - daňový doklad").text = "code:FAKTURA"
-    ElementTree.SubElement(invoice, 'nazev').text = billing_company_name or billing_first_name + " " + billing_last_name
-    ElementTree.SubElement(invoice, 'nazFirmy').text = "{} {}".format(shipping_first_name,
-                                                                      shipping_last_name)
+    ElementTree.SubElement(invoice, 'nazev').text = "{}{}_{}".format(billing_first_name, billing_last_name,
+                                                                     variable_symbol)
+    ElementTree.SubElement(invoice, 'nazFirmy').text = billing_company_name or\
+                                                       billing_first_name + " " + billing_last_name
     ElementTree.SubElement(invoice, 'ulice').text = "{}".format(billing_street)
     ElementTree.SubElement(invoice, 'mesto').text = "{}".format(billing_city)
     ElementTree.SubElement(invoice, 'psc').text = "{}".format(billing_zip)
